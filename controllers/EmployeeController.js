@@ -37,21 +37,37 @@ const signUp = (req, res, next) => {
   });
 };
 
-//show the list employees
-
+//pagination code
 const index = (req, res, next) => {
-  Employee.find()
+  Employee.paginate({}, { page: req.query.page, limit: req.query.limit })
     .then((response) => {
       res.json({
         response,
       });
     })
     .catch((error) => {
-      res.json({
-        messsage: "An Error Occurred!",
+      res.status(500).json({
+        message: "An error occurred while paginating employees.",
+        error: error.message,
       });
     });
 };
+
+//show the list employees
+
+// const index = (req, res, next) => {
+//   Employee.find()
+//     .then((response) => {
+//       res.json({
+//         response,
+//       });
+//     })
+//     .catch((error) => {
+//       res.json({
+//         messsage: "An Error Occurred!",
+//       });
+//     });
+// };
 
 const show = (req, res, next) => {
   const employeeId = req.body.employeeId;
