@@ -1,6 +1,6 @@
 const Employee = require("../models/Employee");
-//const Users = require("../models/users");
-
+const monmodel = require("../models/monModel");
+const Counter = require("../models/Counter");
 const bcrypt = require("bcrypt");
 const Users = require("../models/users");
 
@@ -52,23 +52,7 @@ const index = (req, res, next) => {
       });
     });
 };
-
-//show the list employees
-
-// const index = (req, res, next) => {
-//   Employee.find()
-//     .then((response) => {
-//       res.json({
-//         response,
-//       });
-//     })
-//     .catch((error) => {
-//       res.json({
-//         messsage: "An Error Occurred!",
-//       });
-//     });
-// };
-
+// get the employee details based on employee id
 const show = (req, res, next) => {
   const employeeId = req.body.employeeId;
 
@@ -84,6 +68,55 @@ const show = (req, res, next) => {
       });
     });
 };
+
+// this api i created for sample code for auto increment of ids
+const post = (req, res) => {
+  let seqId;
+
+  async function updateCounter() {
+    try {
+      const cd = await Counter.findOneAndUpdate(
+        { id: "autoval" },
+        { $inc: { seq: 1 } },
+        { new: true }
+      );
+
+      if (!cd) {
+        const newval = new Counter({ id: "autoval", seq: 1 });
+        await newval.save();
+        seqId = 1;
+      } else {
+        seqId = cd.seq;
+      }
+
+      const data = new monmodel({
+        name: req.body.name,
+        email: req.body.email,
+        user_id: `user_${seqId}`,
+      });
+
+      data.save();
+      res.send("posted");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  updateCounter();
+
+  // countermodel.findOneAndUpdate(
+  //   { id: "autoval" },
+  //   { $inc: { seq: 1 } },
+  //   { new: true },
+  //   (err, cd) => {
+  //     if (cd == null) {
+  //       const newval = new countermodel({ id: "autoval", seq: 1 });
+  //       newval.save();
+  //     }
+  //   }
+  // );
+};
+
 //add an employee
 const store = (req, res, next) => {
   let employee = new Employee({
@@ -170,4 +203,5 @@ module.exports = {
   store,
   destroy,
   signUp,
+  post,
 };

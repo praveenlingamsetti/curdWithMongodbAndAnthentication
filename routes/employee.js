@@ -5,6 +5,7 @@ const EmployeeController = require("../controllers/EmployeeController");
 const authenticateToken = require("../middleware/authentication");
 
 const userLogin = require("../controllers/authController");
+router.post("/post", EmployeeController.post);
 router.post("/signup", EmployeeController.signUp);
 router.post("/login", userLogin);
 router.get("/", authenticateToken, EmployeeController.index);
